@@ -1,0 +1,190 @@
+ <div className='flex-1 h-full  mb-32 lg:px-12  '>
+<div className='bg-purple h-screen pt-4 px-6'>
+<div className=" flex justify-between text-lg font-extrabold ">
+<IoArrowBackOutline size={32} />
+<CiEdit size={34}  />
+</div>
+<div className='flex flex-col justify-center'>
+ <h1 className='text-2xl font-bold my-5 text-center'>Salon App Wireframe & UI</h1> 
+
+    <div className='flex flex-col gap-4 text-xl px-3'>
+    <div className='flex flex-row  justify-between'>
+        <span className='font-semibold'>Start Date</span>
+        <span className='font-bold'>August 12, 2024</span>
+    </div>
+    <div className='flex flex-row  justify-between'>
+        <span className='font-semibold'>End Date</span>
+        <span className='font-bold'>January 12, 2024</span>
+    </div>
+    <div className='flex flex-row  justify-between'>
+        <span className='font-semibold'>Time</span>
+        <span className='font-bold'>10 AM - 6 PM</span>
+    </div>
+    <div className='flex flex-row  justify-between'>
+        <span className='font-semibold'>Priority</span>
+        <span
+className={`px-2 py-1 text-lg text-[#F1F5F9] font-semibold rounded-md bg-[#EF4444]`}>
+    High
+</span>
+    </div>
+
+    </div>
+ <div className='bg-bgColor h-[50%]'>
+
+ </div>
+</div>
+</div>
+   </div>
+
+
+
+
+
+
+    <div className="fixed z-50 inset-0 overflow-y-auto">
+        <div className="flex   min-h-screen pt-4 pb-20 text-center sm:block sm:p-0 w-full">
+          <div className="fixed inset-0 transition-opacity">
+            <div className="absolute inset-0 bg-bgColor opacity-70"></div>
+          </div>
+          <span className=" sm:inline-block sm:align-middle sm:h-screen"></span>
+          &#8203;
+          <div
+            className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8  sm:w-full"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
+            <div className="flex justify-between  pt-5 pb-2">
+              <label
+                htmlFor="name"
+                className=" font-bold text-2xl text-text "
+              >
+                Create Team
+              </label>
+
+              <button className="text-text" >
+                <MdClose size={22} />
+              </button>
+            </div>
+            <div
+              className="px-4 sm:px-6 flex flex-col gap-3 2xl:gap-6 border border-darj "
+              >
+               <div className='mb-4 border-b border-text'>
+    <label className="block text-lg font-semibold mb-2 text-gray">Team Name</label>
+    <input type="text"
+    value={teamName}
+    onChange={(e) => setTeamName(e.target.value)}
+    className='w-full p-3 bg-bgColor text-text text-lg  outline-none '
+    />
+
+
+    </div>
+
+    <div className='mb-4 border-b border-text'>
+    <label className="block text-lg font-semibold mb-2 text-gray">Add Team Members</label>
+   <div className='flex flex-row'>
+    <input type="email"
+    value={value}
+    onChange={(e) => setValue(e.target.value)}
+    className='w-full p-3 bg-bgColor text-text text-lg  outline-none '
+    />
+  <button className='bg-ascent text-lg px-3 py-1 font-semibold'
+  onClick={handleAdd}
+  >Add</button>
+</div>
+<p className='font-bold text-text '>{info}</p>
+<div className="flex flex-col gap-2 mt-2">
+  {members.map((member, index) => (
+    <div key={index} className="flex items-center gap-3 bg-gray p-3 rounded">
+      <span>{member}</span>
+      <button
+        className="text-text font-semibold"
+        onClick={() => handleRemoveMember(index)}
+      >
+        <MdClose />
+      </button>
+    </div>
+  ))}
+</div>
+
+    </div>
+
+    <button className='w-full px-4 py-2 bg-[#6EE7B7] text-text rounded-md shadow hover:bg-[#34D399]' 
+    onClick={handleCreateTeam}
+  >
+    Create Team
+  </button>   
+             
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+          // for (const email of members) {
+          //   try {
+          //     // Reference the user document by email
+          //     // const userQuery = doc(db, "users", email); 
+          //     const userQuery = query(collection(db, "users"), where("email", "==", email));
+          //    const adminQuery = query(collection(db, "users"), where("email", "==", email)); // to get the team admin query
+          //     console.log('USERquERY', userQuery)
+          //     const userSnapshot = await getDocs(userQuery);
+          //     const adminSnapshot = await getDocs(adminQuery)
+          //     console.log('userSnapshot', userSnapshot)
+             
+          //     if (!userSnapshot.empty) {
+          //       // If user exists, extract the first document's reference and data
+             
+          //       const userDoc = userSnapshot.docs[0]; // Get the first matching document
+          //       const adminDoc = adminSnapshot.docs[0];
+          //       const userRef = userDoc.ref; // Extract the DocumentReference
+          //       const adminRef = adminDoc.ref;
+          //       const userData = userDoc.data() as { uid: string; email: string; name: string, profilePicture: string };
+          //        //The block of code below is to map throught members email so that we can append the team data to the user data structure
+          //        const memberPromises = members.map(async (email ) => {
+          //            await updateDoc(userRef, {
+          //               teams: arrayUnion({
+          //                 teamId:teamDocRef.id,
+          //                 teamName,
+          //                 role:"Member",
+          //                 members: members
+          //               })
+          //            })
+
+                    
+          //        })
+          //        await updateDoc(adminRef, {
+          //         teams: arrayUnion({
+          //           teamId:teamDocRef.id,
+          //           teamName,
+          //           role: "Admin",
+          //           members: members
+          //         })
+          //      })
+          //       // Add the user to the team's members array
+          //       await updateDoc(teamDocRef, {
+          //         members: arrayUnion({
+          //           uid: userData.uid,
+          //           email: userData.email,
+          //           name: userData.name,
+          //           profilePicture: userData.profilePicture
+          //         }),
+          //       });
+          //       await Promise.all(memberPromises);
+          //     } else {
+          //       // If no matching user is found
+          //       allMembersValid = false;
+               
+          //       alert(`User with email ${email} is not registered.`);
+          //     }
+          //   } catch (error) {
+          //     console.error(`Error processing email ${email}:`, error);
+          //     allMembersValid = false; // Mark as invalid in case of error
+          //     alert(`Failed to process email ${email}. Please try again.`);
+          //   }
+          // }
