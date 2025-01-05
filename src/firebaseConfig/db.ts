@@ -74,6 +74,18 @@ export const saveUserToFirestore = async (user: any) => {
       console.log("Error retrieving tasks:", error)
     }
   }
+
+  export const getTeams = async(userId:string) => {
+    try{
+      const userRef = doc(db, "users", userId)
+      const userSnap = await getDoc(userRef)
+      if(userSnap.exists()) {
+        return userSnap.data().teams || []
+      }
+    } catch (error){
+      console.log("Error retrieving Teams:", error)
+    }
+  }
   // export const deleteTask = async (userId: string, taskId: string) => {
   //   try {
   //     const userRef = doc(db, "users", userId);

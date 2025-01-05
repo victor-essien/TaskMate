@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import {auth} from '../firebaseConfig/firebase'
-import { getTasks } from "../firebaseConfig/db";
+
 import { Timestamp } from "firebase/firestore";
 
 interface TaskType  {

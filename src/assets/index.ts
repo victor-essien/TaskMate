@@ -1,4 +1,5 @@
 import Notes from './notes.png'
+import Teams from './team.png'
 
 
-export {Notes}
+export {Notes, Teams}
