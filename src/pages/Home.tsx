@@ -41,9 +41,10 @@ const Home = () => {
     console.log("callelee");
     const fetchTasks = async () => {
       if (!storedUser) return;
-
+      console.log('stored', storedUser)
       console.log("userIdfromongon", userId);
       const userTasks = await getTasks(userId);
+
       console.log("userTasks", userTasks);
       dispatch(fetchAndSetTasks(userTasks)); // Dispatch tasks to Redux store
     };

@@ -1,5 +1,6 @@
 
 import { Timestamp } from "firebase/firestore";
+import {Link} from 'react-router-dom'
 
 interface TaskType  {
   priority: string;
@@ -54,14 +55,21 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({tasks}) => {
       </div>
       <div className="space-y-4">
         {tasks.map((task, index) => (
+          <Link
+          to={`/task/${task.taskId}`}
+          >
           <div
             key={index}
             className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2"
           >
             <div className="flex items-center justify-between">
               <span
-                className={`px-2 py-1 text-xs font-semibold rounded-md ${
-                  task.priority === "High" ? "bg-[#EF4444] text-[#F1F5F9]" : "bg-[#F59E0B] text-[#050404]"
+                 className={`px-2 py-1 text-xs font-semibold rounded-md ${
+                  task.priority === "High"
+                    ? "bg-[#EF4444] text-[#F1F5F9]"
+                    : task.priority === "Medium"
+                    ? "bg-[#F59E0B] text-[#050404]"
+                    : "bg-[#6EE7B7] text-[#050404]"
                 }`}
               >
                 {task.priority}
@@ -93,6 +101,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({tasks}) => {
               ))} */}
             </div>
           </div>
+          </Link>
         ))}
       </div>
     </div>

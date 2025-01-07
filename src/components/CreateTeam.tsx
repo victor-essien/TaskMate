@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { MdClose } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import {
   addDoc,
   collection,
@@ -8,44 +9,75 @@ import {
   where,
   getDoc,
   updateDoc,
+  serverTimestamp,
   arrayUnion,
   getDocs,
 } from "firebase/firestore";
-import { AuthProvider, useAuth } from "../context/AuthContex";
 import { db } from "../firebaseConfig/firebase";
+import BottomNavigation from "./BottomNavigation";
+import { Timestamp } from "firebase/firestore";
 
-interface TeamMember {
+interface User {
   uid: string;
   email: string;
-  name: string;
-  profilePicture: string;
+  displayName: string;
+  photoURL: string;
+}
+interface TeamAdmin extends User {}
+
+interface TeamMember extends User {}
+
+interface TaskType {
+  priority: string;
+  color: string;
+  description: string;
+  taskId: string;
+  status: string;
+  category: string;
+  taskName: string;
+  dueDate: Timestamp | null;
+  startDate: Timestamp | null;
 }
 
 interface Team {
+  teamId: string;
   teamName: string;
-  teamAdmin: string;
-  teamAdminName: string;
-  members: TeamMember;
+  teamAdmin: TeamAdmin;
+  teamDescription: string;
+  role: "Admin" | "Member";
+  task: TaskType[]; // Define the task structure if needed
+  members: TeamMember[];
+  createdAt: any;
 }
+// interface Team {
+//   teamName: string;
+//   teamAdmin: string;
+//   teamAdminName: string;
+//   members: TeamMember;
+// }
 interface Userr {
   uid: string;
   email: string;
   displayName: string;
 }
-interface TeamAdmin {
-  displayName: string;
-  photoURL: string;
-  uid: string;
-  email: string;
-}
+// interface TeamAdmin {
+//   displayName: string;
+//   photoURL: string;
+//   uid: string;
+//   email: string;
+// }
 
 const CreateTeam = () => {
   const [teamName, setTeamName] = useState<string>("");
   const [value, setValue] = useState<string>("");
+  const [teamDescription, setTeamDescription] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
   const [info, setInfo] = useState<string>("");
   const userString = localStorage.getItem("user");
-
+  const navigate = useNavigate();
+  const goBack = () => {
+    navigate(-1); // This will navigate to the previous URL
+  };
   // Check if userString is null
   if (!userString) {
     throw new Error("User is not logged in.");
@@ -73,9 +105,10 @@ const CreateTeam = () => {
     try {
       const user: TeamAdmin = JSON.parse(userString);
       console.log(user);
-      const adminDetails = {
-        name: user.displayName, // Assumes the user object has a `name` field
-        profilePicture: user.photoURL, // Assumes the user object has a `profilePicture` field
+
+      const adminDetails: TeamAdmin = {
+        displayName: user.displayName, // Assumes the user object has a `name` field
+        photoURL: user.photoURL, // Assumes the user object has a `profilePicture` field
         uid: user.uid,
         email: user.email,
       };
@@ -83,11 +116,15 @@ const CreateTeam = () => {
       const teamDocRef = await addDoc(collection(db, "teams"), {
         teamName,
         teamAdmin: adminDetails,
+        teamDescription,
         teamAdminName: user.displayName,
+        task: [],
         members: [],
+        createdAt: serverTimestamp(),
       });
 
       let allMembersValid = true; // Flag to check if all members are valid
+      const membersDetails: TeamMember[] = [];
       const memberPromises = members.map(async (email) => {
         const userQuery = query(
           collection(db, "users"),
@@ -99,43 +136,76 @@ const CreateTeam = () => {
         ); // //Reference the admin document by email
         const userSnapshot = await getDocs(userQuery);
         const adminSnapshot = await getDocs(adminQuery);
+        console.log("usersnap", userSnapshot);
         if (!userSnapshot.empty) {
           const userDoc = userSnapshot.docs[0]; // Get the first matching document
           const adminDoc = adminSnapshot.docs[0];
           const userRef = userDoc.ref; // Extract the DocumentReference
           const adminRef = adminDoc.ref;
-          const userData = userDoc.data() as {
-            uid: string;
-            email: string;
-            name: string;
-            profilePicture: string;
-          };
+          userSnapshot.forEach((doc) => {
+            const userData = doc.data() as {
+              uid: string;
+              email: string;
+              name: string;
+              profilePicture: string;
+            };
 
+            // Create the member details object
+            const memberDetails: TeamMember = {
+              uid: userData.uid,
+              email: userData.email,
+              displayName: userData.name,
+              photoURL: userData.profilePicture,
+            };
+
+            // Add to the membersDetails array
+            membersDetails.push(memberDetails);
+          });
+          // update the team in the user structure
           await updateDoc(userRef, {
             teams: arrayUnion({
               teamId: teamDocRef.id,
               teamName,
-              role: "Member",
-              members: members,
+              teamAdmin: adminDetails,
+              teamDescription,
+              role: email === adminDetails.email ? "Admin" : "Member",
+              task: [],
+              members: membersDetails,
+              createdAt: Date.now(),
             }),
           });
-
+          // update it to the admin i.e user creating the team
           await updateDoc(adminRef, {
             teams: arrayUnion({
               teamId: teamDocRef.id,
               teamName,
+              teamAdmin: adminDetails,
+              teamDescription: teamDescription,
+              task: [],
               role: "Admin",
-              members: members,
+              members: membersDetails, ///we are reciving an array here so and array of object of member details
+              createdAt: Date.now(),
             }),
           });
+          //           // Step 2: Retrieve the updated teams array and find the new team
+          // const userDdoc = await getDoc(adminRef);
+          // const userData = userDdoc.data();
+
+          // if (userData && userData.teams) {
+          //   const updatedTeams = userData.teams.map((team: any) =>
+          //     team.teamId === teamDocRef.id
+          //       ? { ...team, createdAt: serverTimestamp() }
+          //       : team
+          //   );
+
+          //   // Step 3: Update the teams array with createdAt added to the specific team
+          //   await updateDoc(adminRef, {
+          //     teams: updatedTeams,
+          //     })}
+
           // Add the user to the team's members array
           await updateDoc(teamDocRef, {
-            members: arrayUnion({
-              uid: userData.uid,
-              email: userData.email,
-              name: userData.name,
-              profilePicture: userData.profilePicture,
-            }),
+            members: arrayUnion(...membersDetails),
           });
           await Promise.all(memberPromises);
         } else {
@@ -160,11 +230,22 @@ const CreateTeam = () => {
       alert("Failed to create team. Please try again.");
     }
   };
+
+  console.log(
+    new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }).format(new Date(1736227524140))
+  );
   return (
     <div className="flex-1 h-full pt-4 pb-4 px-5  lg:px-28 ">
       <div className="flex gap-9  text-text font-bold my-4 justify-between">
         <h2 className="text-2xl font-semibold mb-6 text-text">Create Team</h2>
-        <MdClose size={30} className="font-bold" />
+        <MdClose size={30} className="font-bold" onClick={goBack} />
       </div>
 
       <div className=" flex flex-col gap-3 2xl:gap-6  ">
@@ -176,6 +257,17 @@ const CreateTeam = () => {
             type="text"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
+            className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
+          />
+        </div>
+        <div className="mb-4 border-b border-text">
+          <label className="block text-lg font-semibold mb-2 text-gray">
+            Team Description
+          </label>
+          <input
+            type="text"
+            value={teamDescription}
+            onChange={(e) => setTeamDescription(e.target.value)}
             className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
           />
         </div>
@@ -225,6 +317,7 @@ const CreateTeam = () => {
           Create Team
         </button>
       </div>
+      <BottomNavigation />
     </div>
   );
 };

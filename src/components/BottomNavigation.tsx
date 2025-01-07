@@ -1,6 +1,7 @@
 import { RiHome6Line, RiAddCircleFill, RiUser3Line } from "react-icons/ri";
 import { IoCalendarSharp } from "react-icons/io5";
 import { MdSpeakerNotes } from "react-icons/md";
+import { MdGroups } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -26,9 +27,9 @@ const BottomNavigation: React.FC = () => {
           <RiAddCircleFill size={28} className="" />
         </Link>
       </button>
-      <Link to={"/notes"}>
-        <MdSpeakerNotes
-          size={28}
+      <Link to={"/team"}>
+        <MdGroups
+          size={38}
           className="text-[#9CA3AF] hover:text-[#F1F5F9]"
         />
       </Link>

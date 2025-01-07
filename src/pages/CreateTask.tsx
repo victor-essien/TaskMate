@@ -5,7 +5,6 @@ import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { addTask } from '../firebaseConfig/db';
 import Sidebar from '../components/Sidebar';
-import BottomNavigation from '../components/BottomNavigation';
 import { useAuth } from '../context/AuthContex'
 
 const CreateTask:React.FC = () => {
@@ -162,7 +161,7 @@ const handleSave = async() => {
         Create Task
       </button>
       </div>
-      <BottomNavigation/>
+
       </div>
      
   )

@@ -7,7 +7,7 @@ import SignIn from "./components/SignIn";
 import Home from "./pages/Home";
 import CreateTeam from "./components/CreateTeam";
 import Calendar from "./pages/Calendar";
-import { Task, Team, Profile, CreateTask } from "./pages";
+import { Task, Team, Profile, CreateTask, ViewTeam } from "./pages";
 
 
 const AppContent = () => {
@@ -72,18 +72,28 @@ const AppContent = () => {
                 }
               />
                <Route
-                path="/task"
+                path="/task/:taskId"
                 element={
                   <ProtectedRoute>
                     <Task />
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/team"
                 element={
                   <ProtectedRoute>
                     <Team />
+                  </ProtectedRoute>
+                }
+              />
+
+                <Route
+                path="/team/:teamId"
+                element={
+                  <ProtectedRoute>
+                    <ViewTeam />
                   </ProtectedRoute>
                 }
               />
@@ -95,7 +105,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="*" element={<div>404 - Page Not Found</div>} />
+              <Route path="*" element={<div className="text-text flex justify-center text-3xl">404 - Page Not Found</div>} />
             </Routes>
           </div>
         </div>
