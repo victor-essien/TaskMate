@@ -2,17 +2,21 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContex";
 import {ThemeProvider, useTheme} from "./context/ThemeContext"
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "./context/AuthContex";
 import Sidebar from "./components/Sidebar";
 import SignIn from "./components/SignIn";
 import Home from "./pages/Home";
 import CreateTeam from "./components/CreateTeam";
 import Calendar from "./pages/Calendar";
-import { Task, Team, Profile, CreateTask, ViewTeam } from "./pages";
+import { Task, Team, Profile, CreateTask, ViewTeam , CreateTeamTask} from "./pages";
 
 
 const AppContent = () => {
   const { theme, toggleTheme } = useTheme(); // Access theme context here
-
+  const { user } = useAuth();
+  console.log('see',user)
   const location = useLocation();
   const showSidebar = location.pathname !== "/";
  
@@ -28,7 +32,7 @@ const AppContent = () => {
       >
         Toggle Theme
       </button> */}
-      <AuthProvider>
+   
         <div className="w-full flex lg:gap-4  pb-12 h-full">
           {showSidebar && (
             <div className="hidden lg:w-48 h-full md:flex flex-col overflow-hidden">
@@ -37,79 +41,85 @@ const AppContent = () => {
           )}
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<SignIn />} />
+              <Route path="/" element={user ? <Home /> : <SignIn />} />
+               <Route element={<ProtectedRoute />}>
+
+              
               <Route
                 path="/home"
                 element={
-                  <ProtectedRoute>
                     <Home />
-                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/calendar"
                 element={
-                  <ProtectedRoute>
+                 
                     <Calendar />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/add"
                 element={
-                  <ProtectedRoute>
+                  
                     <CreateTask />
-                  </ProtectedRoute>
+                  
                 }
               />
                <Route
                 path="/create-team"
                 element={
-                  <ProtectedRoute>
+                  
                     
                     <CreateTeam />
-                  </ProtectedRoute>
+                  
                 }
               />
                <Route
                 path="/task/:taskId"
                 element={
-                  <ProtectedRoute>
+                 
                     <Task />
-                  </ProtectedRoute>
+                  
                 }
               />
 
               <Route
                 path="/team"
                 element={
-                  <ProtectedRoute>
                     <Team />
-                  </ProtectedRoute>
+                  
                 }
               />
 
                 <Route
                 path="/team/:teamId"
                 element={
-                  <ProtectedRoute>
+                  
                     <ViewTeam />
-                  </ProtectedRoute>
+                }
+              />
+               <Route
+                path="/create-task"
+                element={
+                 
+                    <CreateTeamTask />
                 }
               />
               <Route
                 path="/profile"
                 element={
-                  <ProtectedRoute>
+                 
                     <Profile />
-                  </ProtectedRoute>
-                }
+               }
               />
               <Route path="*" element={<div className="text-text flex justify-center text-3xl">404 - Page Not Found</div>} />
+              </Route>
             </Routes>
           </div>
         </div>
-      </AuthProvider>
+      
     </div>
   );
 };

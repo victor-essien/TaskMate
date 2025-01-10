@@ -125,96 +125,187 @@ const CreateTeam = () => {
 
       let allMembersValid = true; // Flag to check if all members are valid
       const membersDetails: TeamMember[] = [];
+      // const memberPromises = members.map(async (email) => {
+      //   const userQuery = query(
+      //     collection(db, "users"),
+      //     where("email", "==", email)
+      //   ); //Reference the user document by email
+      //   const adminQuery = query(
+      //     collection(db, "users"),
+      //     where("email", "==", adminDetails.email)
+      //   ); // //Reference the admin document by email
+      //   const userSnapshot = await getDocs(userQuery);
+      //   const adminSnapshot = await getDocs(adminQuery);
+      //   console.log("usersnap", userSnapshot);
+      //   if (!userSnapshot.empty) {
+      //     const userDoc = userSnapshot.docs[0]; // Get the first matching document
+      //     const adminDoc = adminSnapshot.docs[0];
+      //     const userRef = userDoc.ref; // Extract the DocumentReference
+      //     const adminRef = adminDoc.ref;
+      //     userSnapshot.forEach((doc) => {
+      //       const userData = doc.data() as {
+      //         uid: string;
+      //         email: string;
+      //         name: string;
+      //         profilePicture: string;
+      //       };
+
+      //       // Create the member details object
+      //       const memberDetails: TeamMember = {
+      //         uid: userData.uid,
+      //         email: userData.email,
+      //         displayName: userData.name,
+      //         photoURL: userData.profilePicture,
+      //       };
+
+      //       // Add to the membersDetails array
+      //       membersDetails.push(memberDetails);
+      //     });
+      //     console.log('memsberDetails', membersDetails)
+      //     console.log('userRef', userRef)
+      //     // update the team in the user structure
+      //     await updateDoc(userRef, {
+      //       teams: arrayUnion({
+      //         teamId: teamDocRef.id,
+      //         teamName,
+      //         teamAdmin: adminDetails,
+      //         teamDescription,
+      //         role: "Member",
+      //         task: [],
+      //         members: membersDetails,
+      //         createdAt: Date.now(),
+      //       }),
+      //     });
+      //     // update it to the admin i.e user creating the team
+      //     await updateDoc(adminRef, {
+      //       teams: arrayUnion({
+      //         teamId: teamDocRef.id,
+      //         teamName,
+      //         teamAdmin: adminDetails,
+      //         teamDescription: teamDescription,
+      //         task: [],
+      //         role: "Admin",
+      //         members: membersDetails, ///we are reciving an array here so and array of object of member details
+      //         createdAt: Date.now(),
+      //       }),
+      //     });
+
+      //     // Add the user to the team's members array
+      //     await updateDoc(teamDocRef, {
+      //       members: arrayUnion(...membersDetails),
+      //     });
+      //     await Promise.all(memberPromises);
+      //   } else {
+      //     allMembersValid = false;
+
+      //     alert(`User with email ${email} is not registered.`);
+      //   }
+      // });
       const memberPromises = members.map(async (email) => {
         const userQuery = query(
           collection(db, "users"),
           where("email", "==", email)
-        ); //Reference the user document by email
-        const adminQuery = query(
-          collection(db, "users"),
-          where("email", "==", adminDetails.email)
-        ); // //Reference the admin document by email
+        );
         const userSnapshot = await getDocs(userQuery);
-        const adminSnapshot = await getDocs(adminQuery);
-        console.log("usersnap", userSnapshot);
+
         if (!userSnapshot.empty) {
-          const userDoc = userSnapshot.docs[0]; // Get the first matching document
-          const adminDoc = adminSnapshot.docs[0];
-          const userRef = userDoc.ref; // Extract the DocumentReference
-          const adminRef = adminDoc.ref;
-          userSnapshot.forEach((doc) => {
-            const userData = doc.data() as {
-              uid: string;
-              email: string;
-              name: string;
-              profilePicture: string;
-            };
+          const userDoc = userSnapshot.docs[0];
+          const userData = userDoc.data() as {
+            uid: string;
+            email: string;
+            name: string;
+            profilePicture: string;
+          };
 
-            // Create the member details object
-            const memberDetails: TeamMember = {
-              uid: userData.uid,
-              email: userData.email,
-              displayName: userData.name,
-              photoURL: userData.profilePicture,
-            };
-
-            // Add to the membersDetails array
-            membersDetails.push(memberDetails);
-          });
-          // update the team in the user structure
-          await updateDoc(userRef, {
-            teams: arrayUnion({
-              teamId: teamDocRef.id,
-              teamName,
-              teamAdmin: adminDetails,
-              teamDescription,
-              role: email === adminDetails.email ? "Admin" : "Member",
-              task: [],
-              members: membersDetails,
-              createdAt: Date.now(),
-            }),
-          });
-          // update it to the admin i.e user creating the team
-          await updateDoc(adminRef, {
-            teams: arrayUnion({
-              teamId: teamDocRef.id,
-              teamName,
-              teamAdmin: adminDetails,
-              teamDescription: teamDescription,
-              task: [],
-              role: "Admin",
-              members: membersDetails, ///we are reciving an array here so and array of object of member details
-              createdAt: Date.now(),
-            }),
-          });
-          //           // Step 2: Retrieve the updated teams array and find the new team
-          // const userDdoc = await getDoc(adminRef);
-          // const userData = userDdoc.data();
-
-          // if (userData && userData.teams) {
-          //   const updatedTeams = userData.teams.map((team: any) =>
-          //     team.teamId === teamDocRef.id
-          //       ? { ...team, createdAt: serverTimestamp() }
-          //       : team
-          //   );
-
-          //   // Step 3: Update the teams array with createdAt added to the specific team
-          //   await updateDoc(adminRef, {
-          //     teams: updatedTeams,
-          //     })}
-
-          // Add the user to the team's members array
-          await updateDoc(teamDocRef, {
-            members: arrayUnion(...membersDetails),
-          });
-          await Promise.all(memberPromises);
+          //create member details object
+          const memberDetails: TeamMember = {
+            uid: userData.uid,
+            email: userData.email,
+            displayName: userData.name,
+            photoURL: userData.profilePicture,
+          };
+          // Add to membersDetails array
+          membersDetails.push(memberDetails);
+          //  const userRef = userDoc.ref;
+          // await updateDoc(userRef, {
+          //   teams: arrayUnion({
+          //     teamId: teamDocRef.id,
+          //     teamName,
+          //     teamAdmin: adminDetails,
+          //     teamDescription,
+          //     role: "Member",
+          //     task: [],
+          //     members: membersDetails, // Final members array
+          //     createdAt: Date.now(),
+          //   }),
+          // });
         } else {
           allMembersValid = false;
-
           alert(`User with email ${email} is not registered.`);
         }
       });
+      await Promise.all(memberPromises);
 
+      // If all members are valid, perform the updates
+      if (allMembersValid) {
+        const updatePromises = members.map(async (email) => {
+          const userQuery = query(
+            collection(db, "users"),
+            where("email", "==", email)
+          );
+          const userSnapshot = await getDocs(userQuery);
+
+          if (!userSnapshot.empty) {
+            const userDoc = userSnapshot.docs[0];
+            const userRef = userDoc.ref;
+
+            // Update the team in the user's document
+            await updateDoc(userRef, {
+              teams: arrayUnion({
+                teamId: teamDocRef.id,
+                teamName,
+                teamAdmin: adminDetails,
+                teamDescription,
+                role: "Member",
+                task: [],
+                members: membersDetails, // Use the fully populated array
+                createdAt: Date.now(),
+              }),
+            });
+          }
+        });
+
+        // Wait for all updates to complete
+        await Promise.all(updatePromises);
+      }
+      // Update the admin's teams field once, outside the loop
+      const adminQuery = query(
+        collection(db, "users"),
+        where("email", "==", adminDetails.email)
+      );
+      const adminSnapshot = await getDocs(adminQuery);
+      if (!adminSnapshot.empty) {
+        const adminDoc = adminSnapshot.docs[0];
+        const adminRef = adminDoc.ref;
+
+        await updateDoc(adminRef, {
+          teams: arrayUnion({
+            teamId: teamDocRef.id,
+            teamName,
+            teamAdmin: adminDetails,
+            teamDescription,
+            role: "Admin",
+            task: [],
+            members: membersDetails, // Final members array
+            createdAt: Date.now(),
+          }),
+        });
+      }
+
+      // Update the team document
+      await updateDoc(teamDocRef, {
+        members: arrayUnion(...membersDetails),
+      });
       // Check if all members are valid before alerting success
       if (allMembersValid) {
         alert("Team created successfully!");
@@ -243,9 +334,10 @@ const CreateTeam = () => {
   );
   return (
     <div className="flex-1 h-full pt-4 pb-4 px-5  lg:px-28 ">
-      <div className="flex gap-9  text-text font-bold my-4 justify-between">
-        <h2 className="text-2xl font-semibold mb-6 text-text">Create Team</h2>
+      <div className="flex gap-20  text-text font-bold my-4 ">
         <MdClose size={30} className="font-bold" onClick={goBack} />
+        <h2 className="text-2xl font-semibold mb-6 text-text">Create Team</h2>
+
       </div>
 
       <div className=" flex flex-col gap-3 2xl:gap-6  ">
@@ -317,7 +409,7 @@ const CreateTeam = () => {
           Create Team
         </button>
       </div>
-      <BottomNavigation />
+     
     </div>
   );
 };

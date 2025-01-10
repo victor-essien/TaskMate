@@ -18,6 +18,7 @@ const Team = () => {
     try {
       const userTeam = await getTeams(userId);
       setTeams(userTeam);
+      console.log('from here',userTeam)
     } catch (error) {
       console.log("Error Fetching", error);
     }
@@ -52,7 +53,7 @@ const Team = () => {
             className="w-full max-w-md mx-auto md:max-w-lg transform animate-fade-in hover:scale-105 transition-transform duration-300"
           />
         </div>
-        {!teams || teams.length==0 ? (
+        {!teams || teams.length ==0 ? (
            <div className="flex flex-col items-center justify-center mt-4 text-center">
            <h1 className="text-4xl font-bold text-gray mb-4">No Team Found</h1>
            <p className="text-lg text-gray mb-6">
@@ -66,14 +67,15 @@ const Team = () => {
         ):(
 
           <div className="space-y-4 ">
-            <h1 className="text-text text-3xl text-center font-bold">Teams</h1>
+            <h1 className="text-text text-3xl text-center my-7 font-bold">Teams</h1>
           {teams.map((team, index) => (
+            <div key={index}> 
             <Link
             to={`/team/${team.teamId}`}
             >
             <div
               key={index}
-              className="p-4 bg-lightgrey rounded-xl cursor-pointer shadow-md space-y-2"
+              className="p-4 bg-lightgrey rounded-xl cursor-pointer shadow-md mb-3 space-y-2"
             >
               
               <h3 className="text-2xl font-bold text-text">{team.teamName}</h3>
@@ -92,6 +94,7 @@ const Team = () => {
               </div>
             </div>
             </Link>
+            </div>
           ))}
         </div>
         )

@@ -12,6 +12,7 @@ interface Team {
   teamDescription: string;
   role: string;
     members: [];
+  task: []
 }
 
 interface Task {
@@ -76,7 +77,7 @@ export const saveUserToFirestore = async (user: any) => {
         tasks: arrayUnion(task), // Add task to the user's tasks array
       });
   
-      console.log("Task added successfully!");
+    alert("Task added successfully!");
     } catch (error) {
       console.error("Error adding task:", error);
     }
