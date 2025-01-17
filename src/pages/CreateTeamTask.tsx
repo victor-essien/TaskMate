@@ -4,6 +4,8 @@ import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { v4 as uuidv4 } from "uuid";
+import { ScaleLoader } from "react-spinners";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   addDoc,
   collection,
@@ -15,6 +17,7 @@ import {
   serverTimestamp,
   arrayUnion,
   getDocs,
+  Timestamp,
 } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
@@ -52,7 +55,7 @@ interface TaskType {
   taskName: string;
   taskDescription: string;
   taskColor: string | null;
-  deadline: Date | null;
+  deadline: Timestamp;
   priority: string;
   selectedMembers: TeamMember[];
 }
@@ -76,9 +79,11 @@ const CreateTeamTask: React.FC = () => {
   const [category, setCategory] = useState<string>("Personal");
   const [showModal, setShowModal] = useState(false);
   const [priority, setPriority] = useState<string>("High");
+  const [loading, setLoading] = useState<boolean>(false)
   const [taskColor, setTaskColor] = useState<string>("purple");
   const [selectedMembers, setSelectedMembers] = useState<TeamMember[]>([]);
   const location = useLocation();
+  const  navigate = useNavigate();
   const { teamId } = location.state || {};
   console.log("team", teamId);
   console.log("startDte", deadline);
@@ -219,53 +224,48 @@ const CreateTeamTask: React.FC = () => {
   };
 
   const createTask = async () => {
-    const taskId = uuidv4();
-    const task: TaskType = {
-      taskId,
-      taskName,
-      taskDescription,
-      priority,
-      taskColor,
-      deadline,
-      selectedMembers,
-    };
-    console.log("taskfromteam", task);
-    await saveTask(task);
-    setTaskName("");
-    setDeadline(null);
-
-    setTaskDescription("");
-    setCategory("Personal");
-    setPriority("High");
-    setTaskColor("purple");
-    setSelectedMembers([]);
-  };
-  // const handleSave = async() => {
-  //     await addTask(
-  //         userId,
-  //         taskName,
-  //         category,
-  //         priority,
-  //         taskColor,
-  //         deadline,
-  //         endDate,
-  //         taskDescription
-  //       );
-
-  //       // Optionally reset form fields after saving
-  //       setTaskName("");
-  //       setDeadline(null);
-  //       setEndDate(null);
-  //       setTaskDescription("");
-  //       setCategory("Personal");
-  //       setPriority("High")
-  //       setTaskColor("purple");
-  // }
+    setLoading(true)
+    try {
+      const taskId = uuidv4();
+      const task: TaskType = {
+        taskId,
+        taskName,
+        taskDescription,
+        priority,
+        taskColor,
+        deadline: deadline ? Timestamp.fromDate(deadline) : Timestamp.fromDate(new Date(0)), // Assign a default Timestamp if null
+        selectedMembers,
+      };
+      console.log("taskfromteam", task);
+      await saveTask(task);
+      setTaskName("");
+      setDeadline(null);
+  
+      setTaskDescription("");
+      setCategory("Personal");
+      setPriority("High");
+      setTaskColor("purple");
+      setSelectedMembers([]);
+    
+    } catch (error) {
+      console.log('Error', error)
+    } finally{
+      setLoading(false)
+    }
+  }
+  
 
   return (
     // <IoMdClose onClick={() =>logout()} size={32} className='font-bold'  />
 
     <div className="flex-1 h-full pt-4 pb-4  px-5 lg:px-28 overflow-auto">
+      <div className="relative">
+      {loading && (
+        <div className="absolute inset-0  bg-opacity-10 flex items-center justify-center z-10">
+          <ScaleLoader color="#36D7B7" />
+        </div>
+      )}
+    
       <div className="flex gap-9  text-text font-bold my-4">
         {/* onClick={() =>logout()} */}
         <IoMdClose size={32} className="font-bold" />
@@ -435,6 +435,7 @@ const CreateTeamTask: React.FC = () => {
         >
           Create Task
         </button>
+      </div>
       </div>
     </div>
   );

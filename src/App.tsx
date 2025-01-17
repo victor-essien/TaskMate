@@ -10,7 +10,7 @@ import SignIn from "./components/SignIn";
 import Home from "./pages/Home";
 import CreateTeam from "./components/CreateTeam";
 import Calendar from "./pages/Calendar";
-import { Task, Team, Profile, CreateTask, ViewTeam , CreateTeamTask} from "./pages";
+import { Task, Team, Profile, CreateTask, ViewTeam , TeamTask, CreateTeamTask} from "./pages";
 
 
 const AppContent = () => {
@@ -105,6 +105,15 @@ const AppContent = () => {
                 element={
                  
                     <CreateTeamTask />
+                }
+              />
+
+<Route
+                path="/team-task/:taskId"
+                element={
+                 
+                    <TeamTask />
+                  
                 }
               />
               <Route

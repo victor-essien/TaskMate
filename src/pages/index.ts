@@ -6,7 +6,8 @@ import Profile from "./Profile";
 import Task from './Task'
 import ViewTeam from "./ViewTeam";
 import CreateTeamTask from "./CreateTeamTask";
+import TeamTask from "./TeamTask";
 
-export {Home, CreateTask, ViewTeam, Team, Calendar, Profile, CreateTeamTask, Task}
+export {Home, CreateTask, ViewTeam, Team, Calendar, Profile, TeamTask, CreateTeamTask, Task}
 
 

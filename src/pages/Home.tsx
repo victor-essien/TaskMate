@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { auth } from "../firebaseConfig/firebase";
 import { getTasks } from "../firebaseConfig/db";
 import { Timestamp } from "firebase/firestore";
+import { ScaleLoader } from "react-spinners";
 import { AppDispatch, RootState } from "../redux/taskSlice";
 
 interface TaskType {
@@ -33,6 +34,7 @@ const Home = () => {
   const usern = storedUser ? JSON.parse(storedUser)?.displayName : null;
   const userId = storedUser ? JSON.parse(storedUser)?.uid : null;
   const username: string = usern?.split(" ")[0] || "User";
+  const [loading, setLoading] = useState<boolean> (true)
   console.log("fromhomhde", username);
 
   // const [tasks, setTasks] = useState<TaskType[]>([])
@@ -40,19 +42,28 @@ const Home = () => {
   useEffect(() => {
     console.log("callelee");
     const fetchTasks = async () => {
-      if (!storedUser) return;
-      console.log('stored', storedUser)
-      console.log("userIdfromongon", userId);
-      const userTasks = await getTasks(userId);
-
-      console.log("userTasks", userTasks);
-      dispatch(fetchAndSetTasks(userTasks)); // Dispatch tasks to Redux store
+      try {
+        if (!storedUser) return;
+        console.log('stored', storedUser)
+        console.log("userIdfromongon", userId);
+        const userTasks = await getTasks(userId);
+  
+        console.log("userTasks", userTasks);
+        dispatch(fetchAndSetTasks(userTasks)); // Dispatch tasks to Redux store
+      
+      } catch (error) {
+        console.log('Error', error)
+      }finally{
+        setLoading(false)
+      }
+    
     };
     console.log("homeee");
     fetchTasks();
+    
   }, [dispatch]);
 
-  console.log("taskkkdk", tasks);
+
   return (
     <div className="flex-1 h-full pt-4 mb-32 lg:px-12 ">
       {/* Header */}
@@ -69,7 +80,15 @@ const Home = () => {
           <RiNotification3Line size={24} />
         </button>
       </div>
-      <OngoingTasks tasks={tasks} />
+
+      {loading ? (
+         <div className="flex items-center justify-center h-20">
+        <ScaleLoader color="#36D7B7" />
+        </div>
+      ) : (
+        <OngoingTasks tasks={tasks} />
+      )}
+  
       <TaskOverview />
 
       <BottomNavigation />

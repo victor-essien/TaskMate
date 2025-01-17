@@ -6,70 +6,101 @@ import { useParams } from "react-router-dom";
 import { fetchTaskDetails } from "../firebaseConfig/db";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig/firebase";
+import { useLocation } from "react-router-dom";
+import CommentSection from "../components/CommentSection";
 import { ScaleLoader } from "react-spinners";
-
-
-interface TaskType {
-  priority: string;
-  color: string;
-  description: string;
-  taskId: string;
-  status: string;
-  category: string;
-  taskName: string;
-  dueDate: Timestamp | null;
-  startDate: Timestamp | null;
+interface TeamType {
+  teamId: string;
+  teamName: string;
+  tasks: TaskType[];
 }
 
-type TaskColor = "bg-Purple" | "bg-Yellow" | "bg-Gray" | "bg-Green";
+interface MembersTyoe {
+  displayName: string;
+  email: string;
+  photoURL: string;
+  uid: string;
+}
+interface TaskType {
+  taskId: string;
+  taskName: string;
+  category: string;
+  selectedMembers: MembersTyoe[];
+  priority: string;
+  color: string;
+  deadline: Timestamp | null;
+  status: string;
+  taskDescription: string;
+}
 
-const Task: React.FC = () => {
-  const navigate = useNavigate();
 
-  const [task, setTask] = useState<TaskType | null>();
-  const [loading, setLoading] = useState<boolean>(false)
-  const { taskId } = useParams<string>();
+
+const TeamTask: React.FC = () => {
+  const { taskId } = useParams();
+  const location = useLocation();
+  const [task, setTask] = useState<TaskType | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const { teamId } = location.state || {};
+  console.log("team", teamId);
+  const navigate = useNavigate()
   const storedUser = localStorage.getItem("user");
+  const userName = storedUser ? JSON.parse(storedUser)?.displayName : null;
   const userId = storedUser ? JSON.parse(storedUser)?.uid : null;
-  if (!taskId) return;
-  const fetchTask = async () => {
-    try {
-      setLoading(true)
-      const details = await fetchTaskDetails(userId, taskId);
 
-      setTask(details);
-      console.log("details", details);
-    } catch (error) {
-      console.log("Error", error)
-    } finally {
-      setLoading(false)
-    }
- 
-
-  
-  };
   useEffect(() => {
-    fetchTask();
-  }, []);
+    const fetchTeamTask = async () => {
+      try {
+        if (!userId || !teamId || !taskId) {
+          setError("Missing required parameters.");
+          return;
+        }
 
+        // Fetch the user document
+        const userRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+          throw new Error("User not found");
+        }
+
+        // Retrieve user data
+        const userData = userDoc.data();
+
+        // Find the team with the specified teamId
+        const targetTeam = userData.teams?.find(
+          (team: TeamType) => team.teamId === teamId
+        );
+        console.log('targetTeam', targetTeam)
+
+        if (!targetTeam) {
+          throw new Error("Team not found");
+        }
+
+        // Find the task with the specified taskId within the team
+        const targetTask = targetTeam.task?.find(
+          (task: TaskType) => task.taskId === taskId
+        );
+
+        if (!targetTask) {
+          throw new Error("Task not found");
+        }
+
+        setTask(targetTask);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamTask();
+  }, [userId, teamId, taskId]);
   const goBack = () => {
     navigate(-1); // This will navigate to the previous URL
   };
-
-  const assignedTo = [
-    "https://randomuser.me/api/portraits/men/1.jpg",
-    "https://randomuser.me/api/portraits/women/2.jpg",
-    "https://randomuser.me/api/portraits/men/3.jpg",
-    "https://randomuser.me/api/portraits/women/4.jpg",
-  ];
-
-  const attachments = [
-    "https://via.placeholder.com/100",
-    "https://via.placeholder.com/100",
-    "https://via.placeholder.com/100",
-  ];
-
-  // Task color variable
   const taskColor: string = "bg-Purple"; // Change this value for testing different colors
 
   // Determine gradient styles based on taskColor
@@ -90,16 +121,16 @@ const Task: React.FC = () => {
     default:
       gradientStyle = "linear-gradient(to right, #E5E7EB, #D1D5DB, #9CA3AF)"; // Default fallback
   }
-
+  
+  if (error) return <div className="text-text">Error: {error}</div>;
   return (
     <div className="flex-1 h-full  mb-32 lg:px-9 lg:pt-4   ">
-
-        {loading ? (
-       <div className="flex items-center justify-center absolute inset-0 x-10">
-          <ScaleLoader color="#36D7B7" />
-        </div>
-      ) : (
-        <div className=" mx-auto  shadow-lg overflow-auto pb-32">
+      {loading ? (
+         <div className="flex items-center justify-center absolute inset-0 x-10">
+         <ScaleLoader color="#36D7B7" />
+       </div>
+      ): (
+        <div className=" mx-auto  shadow-lg overflow-auto pb-2">
         {/* Top Section with Hex Background */}
         <div
           className="p-6 text-black"
@@ -120,8 +151,8 @@ const Task: React.FC = () => {
                 <span className="font-semibold">Start Date</span>
                 <span className="font-bold">
                   {" "}
-                  {task?.startDate
-                    ? task?.startDate.toDate().toLocaleDateString("en-US", {
+                  {task?.deadline
+                    ? task?.deadline.toDate().toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -129,18 +160,7 @@ const Task: React.FC = () => {
                     : "No due date"}
                 </span>
               </div>
-              <div className="flex flex-row  justify-between">
-                <span className="font-semibold">End Date</span>
-                <span className="font-bold">
-                  {task?.dueDate
-                    ? task.dueDate.toDate().toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : "No due date"}
-                </span>
-              </div>
+              
               <div className="flex flex-row  justify-between">
                 <span className="font-semibold">Time</span>
                 <span className="font-bold">10 AM - 6 PM</span>
@@ -166,30 +186,30 @@ const Task: React.FC = () => {
         {/* Bottom Section with Dark Background */}
         <div className="  text-text p-6">
           <div className="bg-bgColor">
-            <div className="mb-4 text-text border-b border-gray pb-4">
+            {/* <div className="mb-4 text-text border-b border-gray pb-4">
               <h2 className="text-2xl font-semibold">Category:</h2>
               <p className="text-xl font-medium mt-1 ">{task?.category}</p>
-            </div>
+            </div> */}
             <div className="mb-4 text-text border-b border-gray pb-4">
               <h2 className="text-2xl font-semibold">Description:</h2>
-              <p className="text-xl font-medium mt-1 ">{task?.description}</p>
+              <p className="text-xl font-medium mt-1 ">{task?.taskDescription}</p>
             </div>
             <div className="mb-4 border-b border-gray pb-4">
               <h2 className="text-2xl font-medium mb-2">Assigned To:</h2>
               <div className="flex space-x-2 mt-1">
-                {assignedTo.map((avatar, index) => (
+                {task?.selectedMembers.map((avatar, index) => (
                   <img
                     key={index}
-                    src={avatar}
+                    src={avatar.photoURL}
                     alt={`Avatar ${index + 1}`}
-                    className="w-8 h-8 rounded-full border-2 border-gray"
+                    className="w-12 h-12 rounded-full "
                   />
                 ))}
               </div>
             </div>
-            <div className="mb-4">
-              <h2 className="text-2xl font-medium mb-2">Attachments:</h2>
-              <div className="flex space-x-2 mt-1">
+            <div className="">
+              <h2 className="text-2xl font-medium ">Comments:</h2>
+              {/* <div className="flex space-x-2 mt-1">
                 {attachments.map((attachment, index) => (
                   <img
                     key={index}
@@ -198,25 +218,19 @@ const Task: React.FC = () => {
                     className="w-20 h-20 rounded-lg border border-gray"
                   />
                 ))}
-              </div>
+              </div> */}
+
             </div>
-            <div className="mt-4">
-              <h2 className="text-2xl font-medium ">Task Color:</h2>
-              <p
-                className="mt-1 text-xl font-semibold"
-                style={{ color: "#d1c4e9" }}
-              >
-                {task?.color}
-              </p>
-            </div>
+          
           </div>
+          <CommentSection teamId={teamId || ''} taskId={task?.taskId || ''} userName={userName || ''} />
         </div>
       </div>
       )}
      
-      <BottomNavigation />
-    </div>
-  );
-};
 
-export default Task;
+    </div>
+  )
+}
+
+export default TeamTask

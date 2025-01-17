@@ -1,17 +1,24 @@
 
-import {doc, setDoc, getDoc, arrayUnion, updateDoc} from 'firebase/firestore';
+import {doc, setDoc, getDoc, getDocs, addDoc, arrayUnion, updateDoc, collection, orderBy, query } from 'firebase/firestore';
 import {db} from './firebase'
 import { v4 as uuidv4 } from "uuid"; 
 import { useRef } from 'react';
 import { Timestamp } from "firebase/firestore";
 
+interface adminType {
+  displayName: string;
+  photoURL: string;
+  uid: string;
+  email: string;
+}
 
 interface Team {
   teamId: string;
   teamName: string;
   teamDescription: string;
   role: string;
-    members: [];
+  members: [];
+  teamAdmin: adminType;
   task: []
 }
 
@@ -34,7 +41,7 @@ export const saveUserToFirestore = async (user: any) => {
         name: user.displayName,
         email: user.email,
         profilePicture: user.photoURL || '',
-        tasks: [],
+     
       };
     
       console.log('Data being saved to Firestore:', userData);
@@ -163,6 +170,32 @@ export const saveUserToFirestore = async (user: any) => {
       
     }
   }
+
+  export const fetchComments = async (teamId:string, taskId:string) => {
+    const commentsRef = collection(db, `teams/${teamId}/tasks/${taskId}/comments`);
+    const commentsQuery = query(commentsRef, orderBy("timestamp", "asc"));
+    const snapshot = await getDocs(commentsQuery);
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        text: data.text || "", // Default to empty string if missing
+        author: data.author || "Anonymous", // Default to "Anonymous" if missing
+        timestamp: data.timestamp?.toDate() || new Date(), // Convert Firestore Timestamp to JS Date
+      };
+    });
+  
+  }
+
+  export const addComment = async (teamId: string, taskId: string, text: string, author: string) => {
+    const commentsRef = collection(db, `teams/${teamId}/tasks/${taskId}/comments`);
+    await addDoc(commentsRef, {
+      text,
+      author,
+      timestamp: Timestamp.now(),
+    });
+  };
+
   // export const deleteTask = async (userId: string, taskId: string) => {
   //   try {
   //     const userRef = doc(db, "users", userId);

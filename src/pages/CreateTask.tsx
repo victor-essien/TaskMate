@@ -4,13 +4,16 @@ import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addTask } from "../firebaseConfig/db";
+import { Navigate, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../context/AuthContex";
-
+import { ScaleLoader } from "react-spinners";
 const CreateTask: React.FC = () => {
   const { logout } = useAuth();
   const [taskName, setTaskName] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [taskDte, setTaskDte] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("Personal");
@@ -19,36 +22,55 @@ const CreateTask: React.FC = () => {
   console.log("startDte", startDate);
   const storedUser = localStorage.getItem("user");
   const userId = storedUser ? JSON.parse(storedUser)?.uid : null;
-
+  const navigate = useNavigate()
+  const goBack = () => {
+    navigate(-1); // This will navigate to the previous URL
+  };
   const handleSave = async () => {
+    setLoading(true)
+    try {
+      await addTask(
+        userId,
+        taskName,
+        category,
+        priority,
+        taskColor,
+        startDate,
+        endDate,
+        taskDescription
+      );
+      setTaskName("");
+      setStartDate(null);
+      setEndDate(null);
+      setTaskDescription("");
+      setCategory("Personal");
+      setPriority("High");
+      setTaskColor("purple");
+    } catch (error: any) {
+      console.log("Error: ", error)
+    }finally{
+      setLoading(false)
+    }
     console.log("clickdf");
-    await addTask(
-      userId,
-      taskName,
-      category,
-      priority,
-      taskColor,
-      startDate,
-      endDate,
-      taskDescription
-    );
+   
 
     // Optionally reset form fields after saving
-    setTaskName("");
-    setStartDate(null);
-    setEndDate(null);
-    setTaskDescription("");
-    setCategory("Personal");
-    setPriority("High");
-    setTaskColor("purple");
+  
   };
+  console.log(taskDte)
 
   return (
     // <IoMdClose onClick={() =>logout()} size={32} className='font-bold'  />
 
     <div className="flex-1 h-full pt-4 pb-4  px-5 lg:px-28 overflow-auto">
+      <div className="relative">
+      {loading && (
+        <div className="absolute inset-0  bg-opacity-10 flex items-center justify-center z-10">
+          <ScaleLoader color="#36D7B7" />
+        </div>
+      )}
       <div className="flex gap-9  text-text font-bold my-4">
-        <IoMdClose onClick={() => logout()} size={32} className="font-bold" />
+        <IoMdClose onClick={goBack} size={32} className="font-bold" />
         <h2 className="text-3xl font-semibold mb-6 text-text">
           Create New Task
         </h2>
@@ -64,6 +86,16 @@ const CreateTask: React.FC = () => {
           onChange={(e) => setTaskName(e.target.value)}
           className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
         />
+         {/* <input
+          type="datetime-local"
+          value={taskDte}
+          onChange={(e) => setTaskDte(e.target.value)}
+          className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
+        /> */}
+        
+        {/* <input
+        type="datetime-local"
+        /> */}
       </div>
       <div className="mb-4 border-b border-text">
         <label className="block text-lg font-semibold mb-2 text-gray">
@@ -181,7 +213,9 @@ const CreateTask: React.FC = () => {
         </button>
       </div>
     </div>
+    </div>
   );
 };
 
 export default CreateTask;
+    
