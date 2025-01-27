@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import {
-  
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig/firebase"; // Ensure Firebase is initialized
 import { ScaleLoader } from "react-spinners";
 import { format } from "date-fns";
@@ -12,11 +8,11 @@ import { useAuth } from "../context/AuthContex";
 import styled from "styled-components";
 import "tailwindcss/tailwind.css";
 import BottomNavigation from "../components/BottomNavigation";
+import { Link } from "react-router-dom";
 
 //Styled component for our Calendar from react-calendar
 const CalendarContainer = styled.div`
   /* ~~~ container styles ~~~ */
-  max-width: 600px;
   margin: auto;
   margin-top: 20px;
   background-color: ;
@@ -73,7 +69,7 @@ const CalendarContainer = styled.div`
   .react-calendar__month-view__days {
     display: grid !important;
     grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
-
+  }
     .react-calendar__tile {
       max-width: initial !important;
       padding: 0.75rem;
@@ -84,7 +80,7 @@ const CalendarContainer = styled.div`
       box-shadow: 0 0 6px 2px black;
       background-color: black;
     }
-  }
+  
 
   /* ~~~ neighboring month & weekend styles ~~~ */
   .react-calendar__month-view__days__day--neighboringMonth {
@@ -110,8 +106,7 @@ const CalendarContainer = styled.div`
     .react-calendar__tile {
       max-width: initial !important;
     }
-  }
-`;
+  `;
 
 interface Task {
   priority: string;
@@ -133,15 +128,10 @@ const CalendarWithTasks: React.FC = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [taskColor, setTaskColor] = useState<string>("bg-Purple"); //setting our colors for task
-  const [activeMonth, setActiveMonth] = useState(
-    format(new Date(), "MMMM yyyy")
-  );
-  const [value, setValue] = useState(new Date());
 
   const handleSetColor = (color: string) => {
     setTaskColor(color);
   };
-  console.log("taskCplor", taskColor);
   let gradientStyle: string;
   switch (taskColor) {
     case "bg-Purple":
@@ -160,9 +150,7 @@ const CalendarWithTasks: React.FC = () => {
       gradientStyle = "#9CA3AF"; // Default fallback
   }
 
-
-  
- // useEffect to handle task color
+  // useEffect to handle task color
   useEffect(() => {
     tasks.forEach((task) => {
       handleSetColor(task.color);
@@ -175,7 +163,7 @@ const CalendarWithTasks: React.FC = () => {
     setLoading(true);
     try {
       // Get the user's document
-      const userDocRef = doc(db, "users", user.uid); 
+      const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
@@ -185,16 +173,15 @@ const CalendarWithTasks: React.FC = () => {
         // Filter tasks based on the selected date
         console.log("selec", selectedDate);
         dayNumber = selectedDate.split("-").pop() || null;
-        console.log("dayNumber", dayNumber);
+
         const tasksForDate = userTasks.filter((task: Task) => {
-          const taskDate = task.dueDate.toDate(); // Convert Firestore Timestamp to JavaScript Date
+          const taskDate = new Date(task?.dueDate); // Convert Firestore Timestamp to JavaScript Date
           const formattedTaskDate = format(taskDate, "yyyy-MM-dd"); // Format the date as 'YYYY-MM-DD'
-          console.log("taskdate", formattedTaskDate);
+
           return formattedTaskDate === selectedDate; // Compare with selectedDate
         });
 
         setTasks(tasksForDate);
-        console.log("tasg", tasks);
       } else {
         console.warn("User document does not exist!");
         setTasks([]);
@@ -211,10 +198,8 @@ const CalendarWithTasks: React.FC = () => {
     fetchTasks();
   }, [selectedDate, user]);
 
- 
-
   return (
-    <div className="flex-1 h-full pt-4 pb-4 px-5 lg:px-28 overflow-auto">
+    <div className="flex-1 h-full pt-4 pb-4 px-5 lg:px-40 overflow-auto">
       <div className="p-4   ">
         <div className="border-b border-gray ">
           <CalendarContainer>
@@ -239,7 +224,7 @@ const CalendarWithTasks: React.FC = () => {
           <div className="w-full mt-4 space-y-3">
             <h1 className="text-text font-bold text-xl text-center">Tasks</h1>
             {tasks.map((task, index) => (
-              <div key={task?.taskId} className="flex items-start gap-2">
+              <div key={task?.taskId} className="flex items-start gap-2 mb-2">
                 {/* Rounded span for the date */}
                 {index === 0 && (
                   <span className="bg-[#0f0f0f] border-gray text-gray px-4 py-4 text-base font-bold rounded-full flex items-center justify-center">
@@ -247,18 +232,21 @@ const CalendarWithTasks: React.FC = () => {
                   </span>
                 )}
                 {/* Task container taking remaining width */}
+
                 <div
-                  className="flex-grow p-4 rounded-lg shadow-md"
-                  style={{
-                    background: gradientStyle,
-                  }}
+                  className="flex-grow p-4 rounded-lg bg-lightgrey shadow-md"
+                  // style={{
+                  //   background: gradientStyle,
+                  // }}
                 >
-                  <h3 className="text-2xl text-bgColor font-bold">
-                    {task.taskName}
-                  </h3>
-                  <p className="text-lg text-text font-semibold">
-                    {task.description}
-                  </p>
+                  <Link to={`/task/${task.taskId}`} key={index}>
+                    <h3 className="text-xl text-bgColor font-bold">
+                      {task.taskName}
+                    </h3>
+                    <p className="text-lg text-[#9CA3AF]  text-text font-semibold">
+                      {task.description}
+                    </p>
+                  </Link>
                 </div>
               </div>
             ))}

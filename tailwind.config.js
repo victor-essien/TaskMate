@@ -6,6 +6,8 @@ export default {
       bgColor: "var(--color-bg)",
       primary: "var(--color-primary) ",
       text: " var(--color-secondary)",
+      texv: "var( --color-bgg)",
+      form: "var(--color-form)",
       gray: "var(--color-gray)",
       abstract:"var(--color-abstract)",
        ascent: "var(--color-ascent1)",
@@ -22,9 +24,20 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(-20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        fadeIni: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        scaleUp: {
+          "0%": { transform: "scale(0.8)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         'fade-in': 'fadeIn 1s ease-in-out',
+        "fade-ini": "fadeIni 1s ease-out",
+
+        "scale-up": "scaleUp 0.8s ease-out",
       },
       fontFamily: {
         playfair: ['"Playfair Display"', 'serif'],

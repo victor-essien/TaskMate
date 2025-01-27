@@ -30,14 +30,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  // const [user, setUser] = useState<any>(null);
-  console.log("fromauth", user);
+
   const login = (user: User) => {
     setUser(user);
     localStorage.setItem("user", JSON.stringify(user)); // Save user to localStorage
   };
   const logout = async () => {
-    console.log("Lofouueue");
     await signOut(auth);
     setUser(null);
     localStorage.removeItem("user"); // Remove user from localStorage

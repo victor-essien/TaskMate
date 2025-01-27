@@ -28,10 +28,7 @@ const BottomNavigation: React.FC = () => {
         </Link>
       </button>
       <Link to={"/team"}>
-        <MdGroups
-          size={38}
-          className="text-[#9CA3AF] hover:text-[#F1F5F9]"
-        />
+        <MdGroups size={38} className="text-[#9CA3AF] hover:text-[#F1F5F9]" />
       </Link>
       <Link to={"/profile"}>
         <BsFillPersonFill

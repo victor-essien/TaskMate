@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContex";
 import {
   addDoc,
   collection,
@@ -16,6 +17,7 @@ import {
 import { db } from "../firebaseConfig/firebase";
 import BottomNavigation from "./BottomNavigation";
 import { Timestamp } from "firebase/firestore";
+import { addNotification } from "../firebaseConfig/db";
 
 interface User {
   uid: string;
@@ -73,6 +75,8 @@ const CreateTeam = () => {
   const [teamDescription, setTeamDescription] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
   const [info, setInfo] = useState<string>("");
+  const { user } = useAuth();
+  const userIde = user?.uid ?? null;
   const userString = localStorage.getItem("user");
   const navigate = useNavigate();
   const goBack = () => {
@@ -85,6 +89,18 @@ const CreateTeam = () => {
 
   // Parse userString to a User object
 
+  const handleNotification = async (
+    userId: string,
+    title: string,
+    link: string,
+    message: string
+  ) => {
+    if (userIde) {
+      await addNotification(userId, title, link, message);
+    } else {
+      console.error("User ID is null");
+    }
+  };
   const handleAdd = () => {
     if (value.trim()) {
       // Add the input value as a new keyword if it's not empty
@@ -125,7 +141,7 @@ const CreateTeam = () => {
 
       let allMembersValid = true; // Flag to check if all members are valid
       const membersDetails: TeamMember[] = [];
-      // const memberPromises = members.map(async (email) => {
+
       //   const userQuery = query(
       //     collection(db, "users"),
       //     where("email", "==", email)
@@ -226,19 +242,6 @@ const CreateTeam = () => {
           };
           // Add to membersDetails array
           membersDetails.push(memberDetails);
-          //  const userRef = userDoc.ref;
-          // await updateDoc(userRef, {
-          //   teams: arrayUnion({
-          //     teamId: teamDocRef.id,
-          //     teamName,
-          //     teamAdmin: adminDetails,
-          //     teamDescription,
-          //     role: "Member",
-          //     task: [],
-          //     members: membersDetails, // Final members array
-          //     createdAt: Date.now(),
-          //   }),
-          // });
         } else {
           allMembersValid = false;
           alert(`User with email ${email} is not registered.`);
@@ -257,6 +260,13 @@ const CreateTeam = () => {
 
           if (!userSnapshot.empty) {
             const userDoc = userSnapshot.docs[0];
+            // This code is so that our userdata will be able and used in notification
+            const userData = userDoc.data() as {
+              uid: string;
+              email: string;
+              name: string;
+              profilePicture: string;
+            };
             const userRef = userDoc.ref;
 
             // Update the team in the user's document
@@ -272,6 +282,11 @@ const CreateTeam = () => {
                 createdAt: Date.now(),
               }),
             });
+            const title = "New Team!";
+            const message = "You've been added to a new team!";
+            const link = `/team/${teamDocRef.id}`;
+            const userId = userData.uid;
+            handleNotification(userId, title, link, message);
           }
         });
 
@@ -310,6 +325,7 @@ const CreateTeam = () => {
       if (allMembersValid) {
         alert("Team created successfully!");
         setTeamName(""); // Reset team name
+        setTeamDescription("");
         setMembers([]); // Reset members
       } else {
         alert(
@@ -336,37 +352,36 @@ const CreateTeam = () => {
     <div className="flex-1 h-full pt-4 pb-4 px-5  lg:px-28 ">
       <div className="flex gap-20  text-text font-bold my-4 ">
         <MdClose size={30} className="font-bold" onClick={goBack} />
-        <h2 className="text-2xl font-semibold mb-6 text-text">Create Team</h2>
-
+        <h2 className="text-2xl font-bold mb-6 text-form">Create Team</h2>
       </div>
 
       <div className=" flex flex-col gap-3 2xl:gap-6  ">
         <div className="mb-4 border-b border-text">
-          <label className="block text-lg font-semibold mb-2 text-gray">
+          <label className="block text-lg font-bold mb-2 text-form">
             Team Name
           </label>
           <input
             type="text"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
+            className="w-full p-3 bg-bgColor text-form text-lg  outline-none "
           />
         </div>
         <div className="mb-4 border-b border-text">
-          <label className="block text-lg font-semibold mb-2 text-gray">
+          <label className="block text-lg font-bold mb-2 text-form">
             Team Description
           </label>
           <input
             type="text"
             value={teamDescription}
             onChange={(e) => setTeamDescription(e.target.value)}
-            className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
+            className="w-full p-3 bg-bgColor text-form text-lg  outline-none "
           />
         </div>
 
         <div className="mb-4 ">
           <div className="border-b border-text mb-5">
-            <label className="block text-lg font-semibold mb-2 text-gray">
+            <label className="block text-lg font-bold mb-2 text-form">
               Add Team Members
             </label>
             <div className="flex flex-row mb-2">
@@ -374,17 +389,17 @@ const CreateTeam = () => {
                 type="email"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full p-3 bg-bgColor text-text text-lg  outline-none "
+                className="w-full p-3 bg-bgColor text-form text-lg  outline-none "
               />
               <button
-                className="bg-ascent text-lg px-3 py-1 rounded-md font-semibold"
+                className="bg-ascent text-lg px-3 py-1 rounded-md font-bold"
                 onClick={handleAdd}
               >
                 Add
               </button>
             </div>
           </div>
-          <p className="font-bold text-text ">{info}</p>
+          <p className="font-bold text-form ">{info}</p>
           <div className="flex flex-col gap-2 mt-2 ">
             {members.map((member, index) => (
               <div
@@ -409,7 +424,6 @@ const CreateTeam = () => {
           Create Team
         </button>
       </div>
-     
     </div>
   );
 };

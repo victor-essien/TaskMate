@@ -12,7 +12,7 @@ const Auth: React.FC = () => {
   const { login } = useAuth();
   const handleSignIn = async () => {
     // e.preventDefault()
-    console.log("clicked");
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -38,7 +38,6 @@ const Auth: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      console.log("User signed out");
     } catch (error) {
       console.error("Error signing out:", error);
     }
