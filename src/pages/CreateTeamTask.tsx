@@ -19,7 +19,6 @@ import {
 } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 
-import { useAuth } from "../context/AuthContex";
 
 import { db } from "../firebaseConfig/firebase";
 
@@ -45,9 +44,7 @@ interface TeamMember {
   displayName: string;
   photoURL: string;
 }
-interface MemberType {
-  email: string;
-}
+
 interface TaskType {
   taskId: string;
   taskName: string;
@@ -67,7 +64,6 @@ const CreateTeamTask: React.FC = () => {
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
   const [adminDetails, setAdminDetails] = useState<adminType | null>(null);
-  const [category, setCategory] = useState<string>("Personal");
   const [showModal, setShowModal] = useState(false);
   const [priority, setPriority] = useState<string>("High");
   const [loading, setLoading] = useState<boolean>(false);
@@ -80,8 +76,6 @@ const CreateTeamTask: React.FC = () => {
   };
   const { teamId } = location.state || {};
 
-  const storedUser = localStorage.getItem("user");
-  const userId = storedUser ? JSON.parse(storedUser)?.uid : null;
 
   useEffect(() => {
     if (!teamId) return;
@@ -246,7 +240,7 @@ const CreateTeamTask: React.FC = () => {
       setDeadline(null);
 
       setTaskDescription("");
-      setCategory("Personal");
+      
       setPriority("High");
       setTaskColor("purple");
       setSelectedMembers([]);

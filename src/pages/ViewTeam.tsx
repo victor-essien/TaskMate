@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchTeamDetails } from "../firebaseConfig/db";
-import { IoIosInformationCircleOutline } from "react-icons/io";
-import { MdClose, MdInfo } from "react-icons/md";
+import {  MdInfo } from "react-icons/md";
 import { ScaleLoader } from "react-spinners";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import TeamDescription from "./TeamDescription";
@@ -164,7 +162,7 @@ const ViewTeam: React.FC = () => {
             <p className="text-sm= text-[#9CA3AF]"> 
         Due Date:{" "}
         {task?.deadline
-                    ? task?.deadline.toDate().toLocaleDateString("en-US", {
+                    ? task?.deadline.toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",

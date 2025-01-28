@@ -30,7 +30,7 @@ interface TeamType {
 }
 
 const TeamDescription: React.FC<TeamDescriptionProps> = ({
-  showDescription,
+
   handleClose,
   teamDetail,
 }) => {

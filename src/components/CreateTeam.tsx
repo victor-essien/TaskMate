@@ -5,18 +5,14 @@ import { useAuth } from "../context/AuthContex";
 import {
   addDoc,
   collection,
-  doc,
   query,
   where,
-  getDoc,
   updateDoc,
   serverTimestamp,
   arrayUnion,
   getDocs,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig/firebase";
-import BottomNavigation from "./BottomNavigation";
-import { Timestamp } from "firebase/firestore";
 import { addNotification } from "../firebaseConfig/db";
 
 interface User {
@@ -29,39 +25,15 @@ interface TeamAdmin extends User {}
 
 interface TeamMember extends User {}
 
-interface TaskType {
-  priority: string;
-  color: string;
-  description: string;
-  taskId: string;
-  status: string;
-  category: string;
-  taskName: string;
-  dueDate: Timestamp | null;
-  startDate: Timestamp | null;
-}
 
-interface Team {
-  teamId: string;
-  teamName: string;
-  teamAdmin: TeamAdmin;
-  teamDescription: string;
-  role: "Admin" | "Member";
-  task: TaskType[]; // Define the task structure if needed
-  members: TeamMember[];
-  createdAt: any;
-}
+
 // interface Team {
 //   teamName: string;
 //   teamAdmin: string;
 //   teamAdminName: string;
 //   members: TeamMember;
 // }
-interface Userr {
-  uid: string;
-  email: string;
-  displayName: string;
-}
+
 // interface TeamAdmin {
 //   displayName: string;
 //   photoURL: string;
@@ -74,7 +46,6 @@ const CreateTeam = () => {
   const [value, setValue] = useState<string>("");
   const [teamDescription, setTeamDescription] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
-  const [info, setInfo] = useState<string>("");
   const { user } = useAuth();
   const userIde = user?.uid ?? null;
   const userString = localStorage.getItem("user");
@@ -399,7 +370,7 @@ const CreateTeam = () => {
               </button>
             </div>
           </div>
-          <p className="font-bold text-form ">{info}</p>
+
           <div className="flex flex-col gap-2 mt-2 ">
             {members.map((member, index) => (
               <div

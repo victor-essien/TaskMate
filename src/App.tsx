@@ -18,11 +18,11 @@ import {
   ViewTeam,
   TeamTask,
   CreateTeamTask,
-  TeamDescription,
+  
 } from "./pages";
 
 const AppContent = () => {
-  const { theme, toggleTheme } = useTheme(); // Access theme context here
+  const { theme, } = useTheme(); // Access theme context here
   const { user } = useAuth();
 
   const location = useLocation();

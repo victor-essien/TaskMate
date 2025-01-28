@@ -139,7 +139,7 @@ const Home: React.FC = () => {
           <ScaleLoader color="#36D7B7" />
         </div>
       ) : (
-        <OngoingTasks tasks={tasks} error={error} />
+        <OngoingTasks tasks={tasks.map(task => ({ ...task, dueDate: task.dueDate ? task.dueDate.toDate().toISOString() : '' }))} error={error} />
       )}
 
       <TaskOverview />

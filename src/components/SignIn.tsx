@@ -1,6 +1,5 @@
 import React from "react";
 import { Notes } from "../assets/index";
-import { FcGoogle } from "react-icons/fc";
 import Auth from "./Auth";
 
 const SignIn: React.FC = () => {

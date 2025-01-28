@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
 import Confetti from "react-confetti";
 import { motion } from "framer-motion";
-import { useAuth } from "../context/AuthContex";
+
 
 interface TaskType {
   priority: string;
@@ -23,7 +23,6 @@ interface TaskType {
   startDate: Timestamp | null;
 }
 
-type TaskColor = "bg-Purple" | "bg-Yellow" | "bg-Gray" | "bg-Green";
 
 const motivationalMessages = [
   "You're doing amazing! Keep it up! 🚀",
@@ -42,7 +41,6 @@ const Task: React.FC = () => {
   const [message, setMessage] = useState("");
   const { taskId } = useParams<string>();
   const storedUser = localStorage.getItem("user");
-  const { user } = useAuth();
   const userId = storedUser ? JSON.parse(storedUser)?.uid : null;
   if (!taskId) return;
 
@@ -50,8 +48,7 @@ const Task: React.FC = () => {
     try {
       setLoading(true);
       const details = await fetchTaskDetails(userId, taskId);
-
-      setTask(details);
+      setTask(details );
       setLoading(false);
     } catch (error) {
       console.log("Error", error);

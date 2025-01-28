@@ -13,7 +13,6 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
-import { useRef } from "react";
 import { Timestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContex";
 
@@ -51,7 +50,7 @@ interface Task {
   status: string;
   category: string;
   taskName: string;
-  dueDate: Timestamp | null;
+  dueDate: string ;
   startDate: Timestamp | null;
 }
 

@@ -1,6 +1,6 @@
-import { auth, provider } from "../firebaseConfig/firebase";
+import { auth } from "../firebaseConfig/firebase";
 
-import React, {
+import  {
   createContext,
   useState,
   useEffect,

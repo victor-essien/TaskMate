@@ -14,7 +14,7 @@ interface NotificationType {
   read: boolean;
 }
 
-const Notification: React.Fc = () => {
+const Notification: React.FC = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const userId = user?.uid;
@@ -55,7 +55,7 @@ const Notification: React.Fc = () => {
               </p>
             </div>
           ) : (
-            notifications.map((notification, index) => (
+            notifications.map((notification) => (
               <div
                 className="p-4 border-b border-gray flex items-start bg-lightgrey rounded-lg "
                 key={notification?.id}

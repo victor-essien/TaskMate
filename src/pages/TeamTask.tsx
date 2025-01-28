@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import BottomNavigation from "../components/BottomNavigation";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
 import { useParams } from "react-router-dom";
-import { fetchTaskDetails } from "../firebaseConfig/db";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";

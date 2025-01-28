@@ -1,6 +1,5 @@
-import { RiHome6Line, RiAddCircleFill, RiUser3Line } from "react-icons/ri";
+import { RiHome6Line, RiAddCircleFill} from "react-icons/ri";
 import { IoCalendarSharp } from "react-icons/io5";
-import { MdSpeakerNotes } from "react-icons/md";
 import { MdGroups } from "react-icons/md";
 import { BsFillPersonFill } from "react-icons/bs";
 import { Link } from "react-router-dom";

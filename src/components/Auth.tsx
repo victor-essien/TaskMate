@@ -1,6 +1,6 @@
 // src/components/Auth.tsx
 import React from "react";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebaseConfig/firebase";
 import { useAuth } from "../context/AuthContex";
 import { FcGoogle } from "react-icons/fc";
@@ -35,13 +35,6 @@ const Auth: React.FC = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   return (
     <div>

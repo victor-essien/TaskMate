@@ -3,18 +3,15 @@ import { IoMdClose } from "react-icons/io";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { addNotification, addTask } from "../firebaseConfig/db";
-import { Navigate, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import { useAuth } from "../context/AuthContex";
+import {  addTask } from "../firebaseConfig/db";
+import {  useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { ScaleLoader } from "react-spinners";
 const CreateTask: React.FC = () => {
-  const { logout } = useAuth();
+  
   const [taskName, setTaskName] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [taskDte, setTaskDte] = useState<string | null>(null);
   const { theme } = useTheme();
   const [endDate, setEndDate] = useState<string | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");

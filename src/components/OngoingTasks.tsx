@@ -1,8 +1,7 @@
-import { useState } from "react";
+
 import { Timestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContex";
-import { ScaleLoader } from "react-spinners";
 import { IoMdTrash } from "react-icons/io";
 import { deleteTask } from "../firebaseConfig/db";
 

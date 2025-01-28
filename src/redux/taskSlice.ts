@@ -22,6 +22,7 @@ const taskSlice = createSlice({
   initialState: initialState,
   reducers: {
     setTasks(state, action: PayloadAction<TaskType[]>) {
+      console.log(state)
       // Directly return the payload as the new state since it's an array
       return action.payload;
     },

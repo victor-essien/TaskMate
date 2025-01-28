@@ -197,6 +197,11 @@ const CalendarWithTasks: React.FC = () => {
   useEffect(() => {
     fetchTasks();
   }, [selectedDate, user]);
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+    setSelectedDate(format(date, "yyyy-MM-dd"))
+    }
+  };
 
   return (
     <div className="flex-1 h-full pt-4 pb-4 px-5 lg:px-40 overflow-auto">
@@ -204,9 +209,7 @@ const CalendarWithTasks: React.FC = () => {
         <div className="border-b border-gray ">
           <CalendarContainer>
             <Calendar
-              onChange={(date: Date) =>
-                setSelectedDate(format(date, "yyyy-MM-dd"))
-              }
+              onChange={handleDateChange}
               value={new Date(selectedDate)}
             />
           </CalendarContainer>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Teams } from "../assets/index";
 import { getTeams } from "../firebaseConfig/db";
 import { Link } from "react-router-dom";
