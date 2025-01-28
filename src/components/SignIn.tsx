@@ -10,7 +10,7 @@ const SignIn: React.FC = () => {
         {/* Logo Section */}
         <div className="absolute top-6 left-6">
           <h1 className="text-3xl font-extrabold font-playfair text-text dark:text-gray-100">
-            TaskMate
+            Tazkly
           </h1>
         </div>
         <div className="flex-1 text-center md:text-left animate-fade-in">
