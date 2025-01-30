@@ -169,7 +169,7 @@ const CalendarWithTasks: React.FC = () => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const userTasks = userData?.tasks || []; // Assuming tasks are stored in `tasks` under the user document
-        console.log("UserTas", userTasks);
+
         // Filter tasks based on the selected date
         console.log("selec", selectedDate);
         dayNumber = selectedDate.split("-").pop() || null;
@@ -209,7 +209,9 @@ const CalendarWithTasks: React.FC = () => {
         <div className="border-b border-gray ">
           <CalendarContainer>
             <Calendar
-              onChange={handleDateChange}
+              onChange={(date: Date) =>
+                setSelectedDate(format(date, "yyyy-MM-dd"))
+              }
               value={new Date(selectedDate)}
             />
           </CalendarContainer>
