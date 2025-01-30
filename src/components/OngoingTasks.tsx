@@ -1,7 +1,8 @@
-
+import { useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContex";
+import { ScaleLoader } from "react-spinners";
 import { IoMdTrash } from "react-icons/io";
 import { deleteTask } from "../firebaseConfig/db";
 
@@ -64,7 +65,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
           </div>
         ) : (
           tasks?.map((task, index) => (
-            <>
+            <div key={index}>
               {task.status === "pending" ? (
                 <Link to={`/task/${task.taskId}`} key={index}>
                   <div className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2">
@@ -133,7 +134,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
                   </Link>
                 </div>
               )}
-            </>
+            </div>
           ))
         )}
       </div>
@@ -150,7 +151,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
           </div>
         ) : (
           tasks.map((task, index) => (
-            <>
+            <div key={index}>
               {task.status === "completed" ? (
                 <div
                   className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2"
@@ -211,7 +212,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
                   </p>
                 </div>
               )}
-            </>
+            </div>
           ))
         )}
       </div>

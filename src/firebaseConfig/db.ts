@@ -255,7 +255,7 @@ export const fetchNotifications = async (userId: string) => {
 
     if (userSnap.exists()) {
       const userData = userSnap.data();
-      console.log("fromdn", userData.notifications);
+      
       return (userData.notifications || []).reverse(); // Return notifications array or an empty array
     } else {
       console.log("No user document found!");
