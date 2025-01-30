@@ -24,7 +24,7 @@ interface OngoingTasksProps {
 }
 const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
   const { user } = useAuth();
-
+  const completedTasks = tasks.filter(task => task.status === "completed");
   const userId = user?.uid;
   const handleDeleteTask = async (taskId: string) => {
     try {
@@ -143,78 +143,64 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
         <button className="text-sm text-gray hover:text-text">See All</button>
       </div>
       <div className="space-y-4">
-        {tasks.length === 0 ? (
-          <div className="flex justify-center mb-4 ">
-            <p className="font-bold text-gray text-xl">
-              NO task Completed<span className="font-bold text-2xl">🥲</span>
-            </p>
-          </div>
-        ) : (
-          tasks.map((task, index) => (
-            <div key={index}>
-              {task.status === "completed" ? (
-                <div
-                  className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2"
-                  key={index}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-md ${
-                        task.priority === "High"
-                          ? "bg-[#EF4444] text-[#F1F5F9]"
-                          : task.priority === "Medium"
-                          ? "bg-[#F59E0B] text-[#050404]"
-                          : "bg-[#6EE7B7] text-[#050404]"
-                      }`}
-                    >
-                      {task.priority}
-                    </span>
-                    <span
-                      className="text-lg font-bold text-texv"
-                      onClick={() => handleDeleteTask(task.taskId)}
-                    >
-                      <IoMdTrash />
-                    </span>
-                  </div>
-                  <Link to={`/task/${task.taskId}`} key={index}>
-                    <h3 className="text-lg font-semibold">{task.taskName}</h3>
+      {completedTasks.length > 0 ? (
+  completedTasks.map((task, index) => (
+    <div
+      className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2"
+      key={index}
+    >
+      <div className="flex items-center justify-between">
+        <span
+          className={`px-2 py-1 text-xs font-semibold rounded-md ${
+            task.priority === "High"
+              ? "bg-[#EF4444] text-[#F1F5F9]"
+              : task.priority === "Medium"
+              ? "bg-[#F59E0B] text-[#050404]"
+              : "bg-[#6EE7B7] text-[#050404]"
+          }`}
+        >
+          {task.priority}
+        </span>
+        <span
+          className="text-lg font-bold text-texv"
+          onClick={() => handleDeleteTask(task.taskId)}
+        >
+          <IoMdTrash />
+        </span>
+      </div>
+      <Link to={`/task/${task.taskId}`} key={index}>
+        <h3 className="text-lg font-semibold">{task.taskName}</h3>
 
-                    <p className="text-sm text-[#9CA3AF]">
-                      Due Date:{" "}
-                      {task.dueDate
-                        ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                            weekday: "long",
-
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : "No due date"}
-                    </p>
-                    <p className="text-sm text-[#9CA3AF]">
-                      Due Time:{" "}
-                      {task.dueDate
-                        ? `${new Date(task.dueDate).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}`
-                        : "No time specified"}
-                    </p>
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex justify-center mb-4">
-                  <p className="font-bold text-gray text-xl">
-                    NO task Completed
-                    <span className="font-bold text-2xl">🥲</span>
-                  </p>
-                </div>
-              )}
-            </div>
-          ))
-        )}
+        <p className="text-sm text-[#9CA3AF]">
+          Due Date:{" "}
+          {task.dueDate
+            ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })
+            : "No due date"}
+        </p>
+        <p className="text-sm text-[#9CA3AF]">
+          Due Time:{" "}
+          {task.dueDate
+            ? `${new Date(task.dueDate).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`
+            : "No time specified"}
+        </p>
+      </Link>
+    </div>
+  ))
+) : (
+  <div className="flex justify-center mb-4">
+    <p className="font-bold text-gray text-xl">
+      NO task Completed
+      <span className="font-bold text-2xl">🥲</span>
+    </p>
+  </div>
+)}
       </div>
     </div>
   );
