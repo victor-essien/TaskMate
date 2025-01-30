@@ -122,16 +122,7 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
                 </Link>
               ) : (
                 <div className="flex flex-col items-center justify-center gap-2 p-4  rounded-xl shadow-md">
-                  <h2 className="text-xl font-bold text-text">
-                    No Ongoing Task
-                  </h2>
-
-                  <Link
-                    to="/add"
-                    className="mt-4 px-4 py-2 bg-yellow font-bold text-lg rounded-lg hover:bg-blue-600"
-                  >
-                    Create New Task
-                  </Link>
+                  
                 </div>
               )}
             </div>
@@ -149,9 +140,9 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
       className="p-4 bg-lightgrey rounded-xl shadow-md space-y-2"
       key={index}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         <span
-          className={`px-2 py-1 text-xs font-semibold rounded-md ${
+          className={`px-2 py-1 text-xs mb-2 font-semibold rounded-md ${
             task.priority === "High"
               ? "bg-[#EF4444] text-[#F1F5F9]"
               : task.priority === "Medium"
@@ -169,9 +160,9 @@ const OngoingTasks: React.FC<OngoingTasksProps> = ({ tasks, error }) => {
         </span>
       </div>
       <Link to={`/task/${task.taskId}`} key={index}>
-        <h3 className="text-lg font-semibold">{task.taskName}</h3>
+        <h3 className="text-lg font-semibold mb-2">{task.taskName}</h3>
 
-        <p className="text-sm text-[#9CA3AF]">
+        <p className="text-sm text-[#9CA3AF] mb-1">
           Due Date:{" "}
           {task.dueDate
             ? new Date(task.dueDate).toLocaleDateString("en-US", {
