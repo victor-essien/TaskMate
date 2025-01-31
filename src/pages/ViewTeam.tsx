@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchTeamDetails } from "../firebaseConfig/db";
-import {  MdInfo } from "react-icons/md";
+import { MdClose, MdInfo } from "react-icons/md";
 import { ScaleLoader } from "react-spinners";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import TeamDescription from "./TeamDescription";
@@ -72,6 +73,7 @@ const ViewTeam: React.FC = () => {
       setLoading(true)
       const details = await fetchTeamDetails(userId, teamId);
       if (!details) return;
+    
       setTeamDetail(details);
       
     } catch (error) {
@@ -162,12 +164,19 @@ const ViewTeam: React.FC = () => {
             <p className="text-sm= text-[#9CA3AF]"> 
         Due Date:{" "}
         {task?.deadline
+    ? new Date(task.deadline.seconds * 1000).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "No due date"}
+        {/* {task?.deadline
                     ? task?.deadline.toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
                       })
-                    : "No due date"}
+                    : "No due date"} */}
         
          
       </p>
